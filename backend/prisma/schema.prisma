@@ -1,0 +1,95 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      String    @default("STUDENT") // "ADMIN" or "STUDENT"
+  status    String    @default("ACTIVE")  // "ACTIVE" or "INACTIVE"
+  attempts  Attempt[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  quizzes     Quiz[]
+  createdAt   DateTime @default(now())
+}
+
+model Quiz {
+  id           String     @id @default(uuid())
+  title        String
+  description  String?
+  categoryId   String
+  category     Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  difficulty   String     @default("INTERMEDIATE") // "EASY", "INTERMEDIATE", "HARD"
+  duration     Int        // duration in minutes
+  passingScore Int        @default(60) // passing percentage (e.g. 60)
+  maxAttempts  Int        @default(2)
+  status       String     @default("DRAFT") // "DRAFT", "PUBLISHED", "UNPUBLISHED"
+  questions    Question[]
+  attempts     Attempt[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Question {
+  id           String     @id @default(uuid())
+  quizId       String
+  quiz         Quiz       @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  questionText String
+  marks        Float      @default(1.0)
+  explanation  String?
+  difficulty   String     @default("INTERMEDIATE") // "EASY", "INTERMEDIATE", "HARD"
+  options      Option[]
+  answers      Answer[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Option {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  optionText String
+  isCorrect  Boolean  @default(false)
+}
+
+model Attempt {
+  id               String    @id @default(uuid())
+  quizId           String
+  quiz             Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score            Float     @default(0.0) // obtained marks
+  percentage       Float     @default(0.0) // obtained percentage
+  correctAnswers   Int       @default(0)
+  incorrectAnswers Int       @default(0)
+  unanswered       Int       @default(0)
+  timeTaken        Int       @default(0)   // time taken in seconds
+  status           String    @default("FAILED") // "PASSED" or "FAILED"
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  answers          Answer[]
+}
+
+model Answer {
+  id               String   @id @default(uuid())
+  attemptId        String
+  attempt          Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId       String
+  question         Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedOptionId String?
+  isCorrect        Boolean  @default(false)
+}

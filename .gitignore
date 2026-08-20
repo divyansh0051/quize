@@ -1,0 +1,32 @@
+# Dependency directories
+node_modules/
+**/node_modules/
+
+# Production builds
+dist/
+**/dist/
+
+# SQLite databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+**/prisma/*.db
+**/prisma/*.db-journal
+**/prisma/*.db-shm
+**/prisma/*.db-wal
+
+# Environment files
+.env
+**/.env
+
+# Custom temp logs & reports
+*_output.txt
+pdf_content.txt
+.system_generated/
+.gemini/
+/tmp/
+
+# OS files
+.DS_Store
+Thumbs.db
