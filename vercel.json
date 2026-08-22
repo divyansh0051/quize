@@ -7,7 +7,7 @@
     "backend": {
       "root": "backend",
       "entrypoint": "src/index.js",
-      "buildCommand": "prisma generate"
+      "buildCommand": "prisma generate && prisma db push --accept-data-loss && node prisma/seed.js"
     }
   },
   "rewrites": [
