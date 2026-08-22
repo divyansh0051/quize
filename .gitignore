@@ -26,6 +26,8 @@ pdf_content.txt
 .system_generated/
 .gemini/
 /tmp/
+.npm-cache/
+.tmp/
 
 # OS files
 .DS_Store
